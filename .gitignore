@@ -1,0 +1,8 @@
+# .gitignore file
+rapport.aux
+rapport.fdb_latexmk
+rapport.fls
+rapport.log
+rapport.out
+rapport.syntex.gz
+rapport.toc
