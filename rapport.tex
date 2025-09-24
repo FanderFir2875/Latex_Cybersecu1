@@ -32,7 +32,18 @@
 % Pour la bibliographie simple
 \usepackage{url}
 
+% <<< ADD THE FIX HERE >>>
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@makeschapterhead}
+  {\vspace*{50\p@}}{\vspace*{10pt}}{}{}
+\patchcmd{\@makeschapterhead}
+  {\vskip 40\p@}{\vspace{15pt}}{}{}
+\makeatother
+% <<< END FIX >>>
+
 \renewcommand{\thesection}{\arabic{section}}
+
 
 \begin{document}
 
@@ -51,11 +62,11 @@
         {\scshape\Huge \textbf{Algorithme de chiffrement par bloc : Serpent} \par}
     \end{minipage}
 
-    \vspace{1cm}
+    \vspace{0.cm}
 
     \rule{\linewidth}{0.4pt}
     
-    \vspace{0.3cm}
+    \vspace{0.1cm}
 
     \centering
     {\Large Rapport\par}
@@ -134,12 +145,6 @@ Chaque ronde applique une permutation fixe des bits pour assurer une bonne diffu
 
 \subsection{Dernière ronde}
 La dernière ronde est légèrement différente : après la substitution, il n’y a pas de transformation linéaire, seulement l’ajout de sous-clé.
-
-\begin{figure}[h]
-    \centering
-    %\includegraphics[width=0.8\textwidth]{assets/serpent-round.png}
-    \caption{Structure d’une ronde de Serpent.}
-\end{figure}
 
 \chapter*{Exemple d’application}
 \addcontentsline{toc}{chapter}{Exemple d'application}
