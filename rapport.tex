@@ -15,12 +15,11 @@
 
 % En-têtes/pieds de page
 \usepackage{fancyhdr}
-\fancypagestyle{plain}{%
-  \fancyhf{} % vide
-  \lhead{Serpent}
-  \rhead{UNC - 2025}
-  \cfoot{\thepage}
-}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Bateau IA}
+\rhead{UNC - 2025}
+\cfoot{\thepage}
 
 
 % Maths et figures
@@ -32,17 +31,7 @@
 % Pour la bibliographie simple
 \usepackage{url}
 
-% <<< ADD THE FIX HERE >>>
-\usepackage{etoolbox}
-\makeatletter
-\patchcmd{\@makeschapterhead}
-  {\vspace*{50\p@}}{\vspace*{10pt}}{}{}
-\patchcmd{\@makeschapterhead}
-  {\vskip 40\p@}{\vspace{15pt}}{}{}
-\makeatother
-% <<< END FIX >>>
-
-\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\thesubsection}{\arabic{subsection}}
 
 
 \begin{document}
@@ -62,7 +51,7 @@
         {\scshape\Huge \textbf{Algorithme de chiffrement par bloc : Serpent} \par}
     \end{minipage}
 
-    \vspace{0.cm}
+    \vspace{0.5cm}
 
     \rule{\linewidth}{0.4pt}
     
@@ -89,12 +78,11 @@
 \end{titlepage}
 
 \tableofcontents
-\newpage
 
-\chapter*{Espaces de définition}
-\addcontentsline{toc}{chapter}{Espaces de définition}
+\section*{Espaces de définition}
+\addcontentsline{toc}{section}{Espaces de définition}
 
-\section{Messages en clair et chiffrés}
+\subsection{Messages en clair et chiffrés}
 L’algorithme Serpent est un chiffrement par bloc avec :
 \begin{itemize}
     \item Espace des messages en clair $M = \{0,1\}^{128}$ ;
@@ -102,7 +90,7 @@ L’algorithme Serpent est un chiffrement par bloc avec :
 \end{itemize}
 Chaque bloc est donc constitué de 128 bits.
 
-\section{Clés}
+\subsection{Clés}
 L’espace des clés dépend de la taille choisie :
 \begin{itemize}
     \item $K = \{0,1\}^{128}$ ;
@@ -111,12 +99,12 @@ L’espace des clés dépend de la taille choisie :
 \end{itemize}
 En pratique, Serpent est défini pour ces trois tailles de clé.
 
-\chapter*{Description du schéma Serpent}
-\addcontentsline{toc}{chapter}{Description du schéma Serpent}
+\section*{Description du schéma Serpent}
+\addcontentsline{toc}{section}{Description du schéma Serpent}
 
-\setcounter{section}{0}
+\setcounter{subsection}{0}
 
-\section{Structure générale}
+\subsection{Structure générale}
 Serpent est basé sur un \textbf{réseau de substitution-permutation (SPN)}.  
 Il comporte 32 rondes successives :
 \begin{enumerate}
@@ -127,37 +115,37 @@ Il comporte 32 rondes successives :
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.4\textwidth]{assets/serpent-global.png}
+    \includegraphics[width=0.35\textwidth]{assets/serpent-global.png}
     \caption{Schéma général de Serpent}
 \end{figure}
 
-\section{Sous-fonctions}
+\subsection{Sous-fonctions}
 
-\subsection{Génération de sous-clés}
+\subsubsection{Génération de sous-clés}
 À partir de la clé initiale, Serpent dérive 33 sous-clés de 128 bits chacune, notées $K_0, K_1, \dots, K_{32}$.
 
-\subsection{Substitution (S-boxes)}
+\subsubsection{Substitution (S-boxes)}
 Huit S-boxes différentes sont utilisées, notées $S_0, \dots, S_7$.  
 Elles transforment des blocs de 4 bits en 4 bits, et sont choisies de manière cyclique au fil des rondes.
 
-\subsection{Transformation linéaire}
+\subsubsection{Transformation linéaire}
 Chaque ronde applique une permutation fixe des bits pour assurer une bonne diffusion.
 
-\subsection{Dernière ronde}
+\subsubsection{Dernière ronde}
 La dernière ronde est légèrement différente : après la substitution, il n’y a pas de transformation linéaire, seulement l’ajout de sous-clé.
 
-\chapter*{Exemple d’application}
-\addcontentsline{toc}{chapter}{Exemple d'application}
+\section*{Exemple d’application}
+\addcontentsline{toc}{section}{Exemple d'application}
 
 Un cas concret d’utilisation de Serpent est son intégration dans certains logiciels de chiffrement comme \textbf{TrueCrypt} (ancien logiciel de chiffrement de disque), où il était proposé comme alternative à AES.  
 Ce type d’application illustre bien l’usage de Serpent dans la protection des données sensibles stockées localement.
 
-\chapter*{Sécurité et limites}
-\addcontentsline{toc}{chapter}{Sécurité et limites}
+\section*{Sécurité et limites}
+\addcontentsline{toc}{section}{Sécurité et limites}
 
-\setcounter{section}{0}
+\setcounter{subsection}{0}
 
-\section{Résistance aux attaques}
+\subsection{Résistance aux attaques}
 Serpent a été conçu avec une marge de sécurité très élevée :
 \begin{itemize}
     \item Résistant à la cryptanalyse différentielle et linéaire ;
@@ -165,15 +153,15 @@ Serpent a été conçu avec une marge de sécurité très élevée :
 \end{itemize}
 Ses 32 rondes sont considérées comme surdimensionnées par rapport au minimum nécessaire (16–24 rondes auraient suffi).
 
-\section{Limites actuelles}
+\subsection{Limites actuelles}
 
 Malgré sa robustesse, Serpent n’a pas été choisi comme AES en raison de sa relative lenteur par rapport à Rijndael (AES).  
 Aujourd’hui, il est toujours considéré comme sûr, mais il est moins utilisé que AES ou ChaCha20, qui sont devenus les standards de fait.
 
-\chapter*{Conclusion}
-\addcontentsline{toc}{chapter}{Conclusion}
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
 
 Serpent est un algorithme de chiffrement robuste et bien conçu, qui mise sur la prudence et la sécurité.  
-S’il n’a pas été choisi comme AES, il demeure un chiffrement respecté, encore pertinent pour l’enseignement et certaines applications pratiques.
+S’il n’a pas été choisi comme AES, il reste un chiffrement respecté, encore pertinent pour l’enseignement et certaines applications pratiques.
 
 \end{document}
