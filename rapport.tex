@@ -134,11 +134,183 @@ Chaque tour applique une permutation fixe des bits pour assurer une bonne diffus
 \subsubsection{Dernier tour}
 Le dernier tour est légèrement différent : après la substitution, il n’y a pas de transformation linéaire, seulement l’ajout de sous-clé.
 
-\section*{Exemple d’application}
-\addcontentsline{toc}{section}{Exemple d'application}
+\section*{Exemple de chiffrement simplifié}
+\addcontentsline{toc}{section}{Exemple de chiffrement simplifié}
 
-Un cas concret d’utilisation de Serpent est son intégration dans certains logiciels de chiffrement comme \textbf{TrueCrypt} (ancien logiciel de chiffrement de disque), où il était proposé comme alternative à AES.  
-Ce type d’application illustre bien l’usage de Serpent dans la protection des données sensibles stockées localement.
+Pour illustrer le fonctionnement de l'algorithme Serpent, nous présentons un exemple simplifié avec un bloc de données réduit à 8 bits (au lieu de 128 bits) et deux tours (au lieu de 32). Cet exemple suit la structure réelle de Serpent : ajout de sous-clé, substitution via S-box, et transformation linéaire, sauf pour le dernier tour où la transformation linéaire est omise, suivie d'un XOR final avec la dernière sous-clé. Nous inclurons également le déchiffrement pour montrer comment inverser le processus. Dans la réalité, Serpent traite des blocs de 128 bits avec 32 tours complets et 33 sous-clés de 128 bits.
+
+\subsection{Données initiales}
+Prenons les données suivantes :
+\begin{itemize}
+    \item \textbf{Texte clair} : \( B = 10101010 \) (8 bits, équivalent à \texttt{0xAA} en hexadécimal).
+    \item \textbf{Sous-clés} (simplifiées, 8 bits chacune) :
+    \begin{itemize}
+        \item \( K_0 = 11110000 \) (\texttt{0xF0}),
+        \item \( K_1 = 10101010 \) (\texttt{0xAA}),
+        \item \( K_2 = 11001100 \) (\texttt{0xCC}).
+    \end{itemize}
+    \item \textbf{S-boxes} : Nous utilisons deux S-boxes inspirées des \( S_0 \) et \( S_1 \) réelles de Serpent, définies pour des entrées de 4 bits (voir Tableaux~\ref{tab:sbox0} et~\ref{tab:sbox1}). Pour simplifier, seules les entrées utilisées dans l'exemple sont listées. Pour le déchiffrement, nous utilisons leurs inverses (voir Tableaux~\ref{tab:sbox0_inv} et~\ref{tab:sbox1_inv}).
+\end{itemize}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        Entrée (décimal) & Entrée (binaire) & Sortie (décimal) & Sortie (binaire) \\
+        \hline
+        0 & 0000 & 3 & 0011 \\
+        1 & 0001 & 8 & 1000 \\
+        5 & 0101 & 6 & 0110 \\
+        10 & 1010 & 4 & 0100 \\
+        12 & 1100 & 7 & 0111 \\
+        \hline
+    \end{tabular}
+    \caption{S-box \( S_0 \) simplifiée pour le tour 0.}
+    \label{tab:sbox0}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        Entrée (décimal) & Entrée (binaire) & Sortie (décimal) & Sortie (binaire) \\
+        \hline
+        0 & 0000 & 15 & 1111 \\
+        1 & 0001 & 12 & 1100 \\
+        8 & 1000 & 1 & 0001 \\
+        12 & 1100 & 6 & 0110 \\
+        \hline
+    \end{tabular}
+    \caption{S-box \( S_1 \) simplifiée pour le tour 1.}
+    \label{tab:sbox1}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        Entrée (décimal) & Entrée (binaire) & Sortie (décimal) & Sortie (binaire) \\
+        \hline
+        3 & 0011 & 0 & 0000 \\
+        8 & 1000 & 1 & 0001 \\
+        6 & 0110 & 5 & 0101 \\
+        4 & 0100 & 10 & 1010 \\
+        7 & 0111 & 12 & 1100 \\
+        \hline
+    \end{tabular}
+    \caption{S-box inverse \( S_0^{-1} \) simplifiée.}
+    \label{tab:sbox0_inv}
+\end{table}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        Entrée (décimal) & Entrée (binaire) & Sortie (décimal) & Sortie (binaire) \\
+        \hline
+        15 & 1111 & 0 & 0000 \\
+        12 & 1100 & 1 & 0001 \\
+        1 & 0001 & 8 & 1000 \\
+        6 & 0110 & 12 & 1100 \\
+        \hline
+    \end{tabular}
+    \caption{S-box inverse \( S_1^{-1} \) simplifiée.}
+    \label{tab:sbox1_inv}
+\end{table}
+
+\subsection{Étape 1 : Tour 0 (chiffrement)}
+\begin{enumerate}
+    \item \textbf{Ajout de sous-clé} : Calculons \( B \oplus K_0 \).
+    \[
+    B = 10101010 \oplus 11110000 = 01011010
+    \]
+    \item \textbf{Substitution (S-box \( S_0 \))} : Divisons le bloc en deux groupes de 4 bits :
+    \begin{itemize}
+        \item Premier groupe : \( 0101 \) (5 en décimal) \( \to S_0(5) = 0110 \) (6).
+        \item Deuxième groupe : \( 1010 \) (10 en décimal) \( \to S_0(10) = 0100 \) (4).
+    \end{itemize}
+    Recombinons : \( B = 01100100 \).
+    \item \textbf{Transformation linéaire} : Pour simplifier, supposons que la transformation linéaire inverse l'ordre des bits.
+    \[
+    01100100 \to 00100110
+    \]
+\end{enumerate}
+
+\subsection{Étape 2 : Tour 1 (dernier tour, chiffrement)}
+Dans Serpent, le dernier tour (tour 31) omet la transformation linéaire et est suivi d'un XOR avec \( K_{32} \). Dans notre exemple simplifié avec deux tours, le tour 1 est considéré comme le dernier tour.
+\begin{enumerate}
+    \item \textbf{Ajout de sous-clé} : Calculons \( B \oplus K_1 \).
+    \[
+    B = 00100110 \oplus 10101010 = 10001100
+    \]
+    \item \textbf{Substitution (S-box \( S_1 \))} : Divisons en deux groupes :
+    \begin{itemize}
+        \item Premier groupe : \( 1000 \) (8) \( \to S_1(8) = 0001 \) (1).
+        \item Deuxième groupe : \( 1100 \) (12) \( \to S_1(12) = 0110 \) (6).
+    \end{itemize}
+    Recombinons : \( B = 00010110 \).
+    \item \textbf{XOR final avec \( K_2 \)} : Puisque c'est le dernier tour, nous omettons la transformation linéaire et effectuons un XOR avec \( K_2 \).
+    \[
+    B = 00010110 \oplus 11001100 = 11011010
+    \]
+\end{enumerate}
+
+\subsection{Résultat du chiffrement}
+Le \textbf{texte chiffré} est donc \( 11011010 \) (\texttt{0xDA} en hexadécimal).
+
+\subsection{Étape 3 : Déchiffrement}
+Le déchiffrement inverse les opérations du chiffrement, en commençant par le XOR final et en appliquant les transformations en ordre inverse, avec les S-boxes inverses et la transformation linéaire inverse (dans notre cas, l'inversion des bits est son propre inverse).
+
+Partons du \textbf{texte chiffré} : \( B = 11011010 \).
+
+\subsubsection{Tour 1 inverse (dernier tour inverse)}
+\begin{enumerate}
+    \item \textbf{XOR inverse avec \( K_2 \)} : \( B \oplus K_2 \).
+    \[
+    B = 11011010 \oplus 11001100 = 00010110
+    \]
+    \item \textbf{Substitution inverse (S-box \( S_1^{-1} \))} : Divisons en deux groupes :
+    \begin{itemize}
+        \item Premier groupe : \( 0001 \) (1) \( \to S_1^{-1}(1) = 1000 \) (8).
+        \item Deuxième groupe : \( 0110 \) (6) \( \to S_1^{-1}(6) = 1100 \) (12).
+    \end{itemize}
+    Recombinons : \( B = 10001100 \).
+    \item \textbf{XOR inverse avec \( K_1 \)} : \( B \oplus K_1 \).
+    \[
+    B = 10001100 \oplus 10101010 = 00100110
+    \]
+\end{enumerate}
+
+\subsubsection{Tour 0 inverse}
+\begin{enumerate}
+    \item \textbf{Transformation linéaire inverse} : Inversion des bits (inverse de LT simplifiée).
+    \[
+    00100110 \to 01100100
+    \]
+    \item \textbf{Substitution inverse (S-box \( S_0^{-1} \))} : Divisons en deux groupes :
+    \begin{itemize}
+        \item Premier groupe : \( 0110 \) (6) \( \to S_0^{-1}(6) = 0101 \) (5).
+        \item Deuxième groupe : \( 0100 \) (4) \( \to S_0^{-1}(4) = 1010 \) (10).
+    \end{itemize}
+    Recombinons : \( B = 01011010 \).
+    \item \textbf{XOR inverse avec \( K_0 \)} : \( B \oplus K_0 \).
+    \[
+    B = 01011010 \oplus 11110000 = 10101010
+    \]
+\end{enumerate}
+
+\subsection{Résultat du déchiffrement}
+Le \textbf{texte clair récupéré} est \( 10101010 \) (\texttt{0xAA} en hexadécimal), correspondant au texte clair initial.
+
+\subsection{Remarques}
+Cet exemple simplifié utilise un bloc de 8 bits et deux tours pour illustrer les opérations de Serpent. Dans l'algorithme réel :
+\begin{itemize}
+    \item Le bloc est de 128 bits, divisé en 32 groupes de 4 bits pour les S-boxes.
+    \item Les 32 tours utilisent les S-boxes \( S_0, S_1, \dots, S_7 \) dans l'ordre cyclique (i mod 8).
+    \item La transformation linéaire est plus complexe, impliquant des rotations et des XOR sur quatre mots de 32 bits, et son inverse est défini en conséquence.
+    \item Le déchiffrement inverse toutes les opérations, en commençant par le XOR avec \( K_{32} \), et en appliquant les S-boxes inverses et la transformation linéaire inverse dans l'ordre inverse des tours.
+\end{itemize}
+
 
 \section*{Sécurité et limites}
 \addcontentsline{toc}{section}{Sécurité et limites}
