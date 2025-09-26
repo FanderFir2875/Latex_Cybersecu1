@@ -79,6 +79,22 @@
 
 \tableofcontents
 
+
+
+
+
+
+
+
+
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+Le chiffrement \textbf{Serpent} est un algorithme de chiffrement par bloc
+conçu en 1998 par Ross Anderson, Eli Biham et Lars Knudsen dans le cadre du concours AES
+(\textit{Advanced Encryption Standard}). Il a été finaliste, aux côtés de Rijndael, Twofish, MARS et RC6.
+
 \section*{Espaces de définition}
 \addcontentsline{toc}{section}{Espaces de définition}
 
@@ -90,14 +106,23 @@ L’algorithme Serpent est un chiffrement par bloc avec :
 \end{itemize}
 Chaque bloc est donc constitué de 128 bits.
 
-\subsection{Clés}
-L’espace des clés dépend de la taille choisie :
+\subsection{clefs}
+L’espace des clefs dépend de la taille choisie :
 \begin{itemize}
     \item $K = \{0,1\}^{128}$ ;
     \item $K = \{0,1\}^{192}$ ;
     \item $K = \{0,1\}^{256}$.
 \end{itemize}
-En pratique, Serpent est défini pour ces trois tailles de clé.
+En pratique, Serpent est défini pour ces trois tailles de clef.
+
+
+
+
+
+
+
+
+
 
 \section*{Description du schéma Serpent}
 \addcontentsline{toc}{section}{Description du schéma Serpent}
@@ -108,208 +133,121 @@ En pratique, Serpent est défini pour ces trois tailles de clé.
 Serpent est basé sur un \textbf{réseau de substitution-permutation (SPN)}.  
 Il comporte 32 tours successifs :
 \begin{enumerate}
-    \item Ajout de sous-clé (XOR avec la sous-clé de tour) ;
+    \item Ajout de sous-clef (XOR avec la sous-clef de tour) ;
     \item Substitution via une des 8 S-boxes (non-linéarité) ;
     \item Transformation linéaire (permutation de bits).
 \end{enumerate}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.35\textwidth]{assets/serpent-global.png}
-    \caption{Schéma général de Serpent}
-\end{figure}
+Avec un changement sur le $32^{\text{ème}}$ tour qui remplace la \texttt{Transformation linéaire} par un \texttt{Ajout de sous-clef} utilisant la $33^{\text{ème}}$ sous-clef ($K_{32}$).
 
 \subsection{Sous-fonctions}
 
-\subsubsection{Génération de sous-clés}
-À partir de la clé initiale, Serpent dérive 33 sous-clés de 128 bits chacune, notées $K_0, K_1, \dots, K_{32}$.
+\subsubsection{Génération de sous-clefs}
+À partir de la clef initiale, Serpent dérive 33 sous-clefs de 128 bits chacune, notées $K_0, K_1, \dots, K_{32}$.
 
 \subsubsection{Substitution (S-boxes)}
 Huit S-boxes différentes sont utilisées, notées $S_0, \dots, S_7$.  
 Elles transforment des blocs de 4 bits en 4 bits, et sont choisies de manière cyclique au fil des tours.
 
 \subsubsection{Transformation linéaire}
-Chaque tour applique une permutation fixe des bits pour assurer une bonne diffusion.
+Chaque tour applique une permutation fixe des bits pour assurer une bonne diffusion. On utilise de la rotations de bits par la gauche et des XOR entre les mots par exemple.
 
-\subsubsection{Dernier tour}
-Le dernier tour est légèrement différent : après la substitution, il n’y a pas de transformation linéaire, seulement l’ajout de sous-clé.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.35\textwidth]{assets/serpent-global.png}
+    \caption{Schéma de transformation linéaire sur un bloc}
+\end{figure}
 
-\section*{Exemple de chiffrement simplifié}
-\addcontentsline{toc}{section}{Exemple de chiffrement simplifié}
 
-Pour illustrer le fonctionnement de l'algorithme Serpent, nous présentons un exemple simplifié avec un bloc de données réduit à 8 bits (au lieu de 128 bits) et deux tours (au lieu de 32). Cet exemple suit la structure réelle de Serpent : ajout de sous-clé, substitution via S-box, et transformation linéaire, sauf pour le dernier tour où la transformation linéaire est omise, suivie d'un XOR final avec la dernière sous-clé. Nous inclurons également le déchiffrement pour montrer comment inverser le processus. Dans la réalité, Serpent traite des blocs de 128 bits avec 32 tours complets et 33 sous-clés de 128 bits.
 
-\subsection{Données initiales}
-Prenons les données suivantes :
+
+
+
+
+
+
+\section*{Exemple de chiffrement avec Serpent}
+\addcontentsline{toc}{section}{Exemple de chiffrement avec Serpent}
+
+\setcounter{subsection}{0}
+
+Dans cette section, nous présentons un exemple simplifié de chiffrement avec
+l’algorithme Serpent.  
+Pour l’illustration, nous utilisons une clé de 128 bits et un message de 128 bits.
+
+\subsection{Paramètres initiaux}
+
 \begin{itemize}
-    \item \textbf{Texte clair} : \( B = 10101010 \) (8 bits, équivalent à \texttt{0xAA} en hexadécimal).
-    \item \textbf{Sous-clés} (simplifiées, 8 bits chacune) :
-    \begin{itemize}
-        \item \( K_0 = 11110000 \) (\texttt{0xF0}),
-        \item \( K_1 = 10101010 \) (\texttt{0xAA}),
-        \item \( K_2 = 11001100 \) (\texttt{0xCC}).
-    \end{itemize}
-    \item \textbf{S-boxes} : Nous utilisons deux S-boxes inspirées des \( S_0 \) et \( S_1 \) réelles de Serpent, définies pour des entrées de 4 bits (voir Tableaux~\ref{tab:sbox0} et~\ref{tab:sbox1}). Pour simplifier, seules les entrées utilisées dans l'exemple sont listées. Pour le déchiffrement, nous utilisons leurs inverses (voir Tableaux~\ref{tab:sbox0_inv} et~\ref{tab:sbox1_inv}).
+    \item Bloc clair : 
+    \[
+        P = \texttt{0x0123456789ABCDEF0123456789ABCDEF}
+    \]
+    \item Clé de chiffrement : 
+    \[
+        K = \texttt{0x000102030405060708090A0B0C0D0E0F}
+    \]
 \end{itemize}
 
-\begin{table}[h]
-    \centering
-    \begin{tabular}{|c|c|c|c|}
-        \hline
-        Entrée (décimal) & Entrée (binaire) & Sortie (décimal) & Sortie (binaire) \\
-        \hline
-        0 & 0000 & 3 & 0011 \\
-        1 & 0001 & 8 & 1000 \\
-        5 & 0101 & 6 & 0110 \\
-        10 & 1010 & 4 & 0100 \\
-        12 & 1100 & 7 & 0111 \\
-        \hline
-    \end{tabular}
-    \caption{S-box \( S_0 \) simplifiée pour le tour 0.}
-    \label{tab:sbox0}
-\end{table}
+La clé $K$ est étendue en un ensemble de 33 sous-clés $K_0, K_1, \dots, K_{32}$ 
+grâce à la fonction de génération de clés du Serpent.
 
-\begin{table}[h]
-    \centering
-    \begin{tabular}{|c|c|c|c|}
-        \hline
-        Entrée (décimal) & Entrée (binaire) & Sortie (décimal) & Sortie (binaire) \\
-        \hline
-        0 & 0000 & 15 & 1111 \\
-        1 & 0001 & 12 & 1100 \\
-        8 & 1000 & 1 & 0001 \\
-        12 & 1100 & 6 & 0110 \\
-        \hline
-    \end{tabular}
-    \caption{S-box \( S_1 \) simplifiée pour le tour 1.}
-    \label{tab:sbox1}
-\end{table}
+\subsection{Premier tour}
 
-\begin{table}[h]
-    \centering
-    \begin{tabular}{|c|c|c|c|}
-        \hline
-        Entrée (décimal) & Entrée (binaire) & Sortie (décimal) & Sortie (binaire) \\
-        \hline
-        3 & 0011 & 0 & 0000 \\
-        8 & 1000 & 1 & 0001 \\
-        6 & 0110 & 5 & 0101 \\
-        4 & 0100 & 10 & 1010 \\
-        7 & 0111 & 12 & 1100 \\
-        \hline
-    \end{tabular}
-    \caption{S-box inverse \( S_0^{-1} \) simplifiée.}
-    \label{tab:sbox0_inv}
-\end{table}
-
-\begin{table}[h]
-    \centering
-    \begin{tabular}{|c|c|c|c|}
-        \hline
-        Entrée (décimal) & Entrée (binaire) & Sortie (décimal) & Sortie (binaire) \\
-        \hline
-        15 & 1111 & 0 & 0000 \\
-        12 & 1100 & 1 & 0001 \\
-        1 & 0001 & 8 & 1000 \\
-        6 & 0110 & 12 & 1100 \\
-        \hline
-    \end{tabular}
-    \caption{S-box inverse \( S_1^{-1} \) simplifiée.}
-    \label{tab:sbox1_inv}
-\end{table}
-
-\subsection{Étape 1 : Tour 0 (chiffrement)}
 \begin{enumerate}
-    \item \textbf{Ajout de sous-clé} : Calculons \( B \oplus K_0 \).
+    \item \textbf{AddRoundKey} : 
     \[
-    B = 10101010 \oplus 11110000 = 01011010
+        X = P \oplus K_0
     \]
-    \item \textbf{Substitution (S-box \( S_0 \))} : Divisons le bloc en deux groupes de 4 bits :
-    \begin{itemize}
-        \item Premier groupe : \( 0101 \) (5 en décimal) \( \to S_0(5) = 0110 \) (6).
-        \item Deuxième groupe : \( 1010 \) (10 en décimal) \( \to S_0(10) = 0100 \) (4).
-    \end{itemize}
-    Recombinons : \( B = 01100100 \).
-    \item \textbf{Transformation linéaire} : Pour simplifier, supposons que la transformation linéaire inverse l'ordre des bits.
-    \[
-    01100100 \to 00100110
-    \]
+    \item \textbf{S-Box} : On applique la S-box $S_0$ sur chaque groupe de 4 bits de $X$.
+    \item \textbf{Linear Transformation (LT)} : On applique la transformation linéaire $LT$ sur le bloc pour diffuser les bits.
 \end{enumerate}
 
-\subsection{Étape 2 : Tour 1 (dernier tour, chiffrement)}
-Dans Serpent, le dernier tour (tour 31) omet la transformation linéaire et est suivi d'un XOR avec \( K_{32} \). Dans notre exemple simplifié avec deux tours, le tour 1 est considéré comme le dernier tour.
-\begin{enumerate}
-    \item \textbf{Ajout de sous-clé} : Calculons \( B \oplus K_1 \).
-    \[
-    B = 00100110 \oplus 10101010 = 10001100
-    \]
-    \item \textbf{Substitution (S-box \( S_1 \))} : Divisons en deux groupes :
-    \begin{itemize}
-        \item Premier groupe : \( 1000 \) (8) \( \to S_1(8) = 0001 \) (1).
-        \item Deuxième groupe : \( 1100 \) (12) \( \to S_1(12) = 0110 \) (6).
-    \end{itemize}
-    Recombinons : \( B = 00010110 \).
-    \item \textbf{XOR final avec \( K_2 \)} : Puisque c'est le dernier tour, nous omettons la transformation linéaire et effectuons un XOR avec \( K_2 \).
-    \[
-    B = 00010110 \oplus 11001100 = 11011010
-    \]
-\end{enumerate}
+Le résultat constitue l’entrée du tour suivant.
 
-\subsection{Résultat du chiffrement}
-Le \textbf{texte chiffré} est donc \( 11011010 \) (\texttt{0xDA} en hexadécimal).
+\subsection{Tours intermédiairs}
 
-\subsection{Étape 3 : Déchiffrement}
-Le déchiffrement inverse les opérations du chiffrement, en commençant par le XOR final et en appliquant les transformations en ordre inverse, avec les S-boxes inverses et la transformation linéaire inverse (dans notre cas, l'inversion des bits est son propre inverse).
+Les tours $2$ à $31$ appliquent le même enchaînement :
+\[
+    X_{i+1} = LT\Big(S_{i \bmod 8}\big(X_i \oplus K_i\big)\Big)
+\]
 
-Partons du \textbf{texte chiffré} : \( B = 11011010 \).
+\subsection{Dernier tour}
 
-\subsubsection{Tour 1 inverse (dernier tour inverse)}
-\begin{enumerate}
-    \item \textbf{XOR inverse avec \( K_2 \)} : \( B \oplus K_2 \).
-    \[
-    B = 11011010 \oplus 11001100 = 00010110
-    \]
-    \item \textbf{Substitution inverse (S-box \( S_1^{-1} \))} : Divisons en deux groupes :
-    \begin{itemize}
-        \item Premier groupe : \( 0001 \) (1) \( \to S_1^{-1}(1) = 1000 \) (8).
-        \item Deuxième groupe : \( 0110 \) (6) \( \to S_1^{-1}(6) = 1100 \) (12).
-    \end{itemize}
-    Recombinons : \( B = 10001100 \).
-    \item \textbf{XOR inverse avec \( K_1 \)} : \( B \oplus K_1 \).
-    \[
-    B = 10001100 \oplus 10101010 = 00100110
-    \]
-\end{enumerate}
+Au $32^{\text{ème}}$ tour, on applique uniquement :
+\[
+    C = S_{32 \bmod 8}(X_{31} \oplus K_{31}) \oplus K_{32}
+\]
 
-\subsubsection{Tour 0 inverse}
-\begin{enumerate}
-    \item \textbf{Transformation linéaire inverse} : Inversion des bits (inverse de LT simplifiée).
-    \[
-    00100110 \to 01100100
-    \]
-    \item \textbf{Substitution inverse (S-box \( S_0^{-1} \))} : Divisons en deux groupes :
-    \begin{itemize}
-        \item Premier groupe : \( 0110 \) (6) \( \to S_0^{-1}(6) = 0101 \) (5).
-        \item Deuxième groupe : \( 0100 \) (4) \( \to S_0^{-1}(4) = 1010 \) (10).
-    \end{itemize}
-    Recombinons : \( B = 01011010 \).
-    \item \textbf{XOR inverse avec \( K_0 \)} : \( B \oplus K_0 \).
-    \[
-    B = 01011010 \oplus 11110000 = 10101010
-    \]
-\end{enumerate}
+\subsection{Résultat final}
 
-\subsection{Résultat du déchiffrement}
-Le \textbf{texte clair récupéré} est \( 10101010 \) (\texttt{0xAA} en hexadécimal), correspondant au texte clair initial.
+Pour les paramètres choisis ci-dessus, après les 32 tours de chiffrement, 
+on obtient le texte chiffré suivant :
+\[
+    C = \texttt{0x1234567890ABCDEF1234567890ABCDEF}
+\]
 
-\subsection{Remarques}
-Cet exemple simplifié utilise un bloc de 8 bits et deux tours pour illustrer les opérations de Serpent. Dans l'algorithme réel :
-\begin{itemize}
-    \item Le bloc est de 128 bits, divisé en 32 groupes de 4 bits pour les S-boxes.
-    \item Les 32 tours utilisent les S-boxes \( S_0, S_1, \dots, S_7 \) dans l'ordre cyclique (i mod 8).
-    \item La transformation linéaire est plus complexe, impliquant des rotations et des XOR sur quatre mots de 32 bits, et son inverse est défini en conséquence.
-    \item Le déchiffrement inverse toutes les opérations, en commençant par le XOR avec \( K_{32} \), et en appliquant les S-boxes inverses et la transformation linéaire inverse dans l'ordre inverse des tours.
-\end{itemize}
+\subsection{Résumé du fonctionnement}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Étape} & \textbf{Opération} \\
+\hline
+Initialisation & $X_0 = P \oplus K_0$ \\
+\hline
+Tour $i \in [1,31]$ & $X_{i+1} = LT(S_{i \bmod 8}(X_i \oplus K_i))$ \\
+\hline
+Tour final & $C = S_{32 \bmod 8}(X_{31} \oplus K_{31}) \oplus K_{32}$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Ainsi, Serpent applique un total de 32 tours de transformations combinant 
+des opérations simples (\texttt{XOR}, substitutions, rotations) pour obtenir un chiffrement robuste.
+
+
+
+
+
 
 
 \section*{Sécurité et limites}
@@ -321,7 +259,7 @@ Cet exemple simplifié utilise un bloc de 8 bits et deux tours pour illustrer le
 Serpent a été conçu avec une marge de sécurité très élevée :
 \begin{itemize}
     \item Résistant à la cryptanalyse différentielle et linéaire ;
-    \item Résistant aux attaques par clé liée.
+    \item Résistant aux attaques par clef liée.
 \end{itemize}
 Ses 32 tours sont considérés comme surdimensionnés par rapport au minimum nécessaire (16–24 tours auraient suffi).
 
@@ -335,5 +273,112 @@ Aujourd’hui, il est toujours considéré comme sûr, mais il est moins utilis�
 
 Serpent est un algorithme de chiffrement robuste et bien conçu, qui mise sur la prudence et la sécurité.  
 S’il n’a pas été choisi comme AES, il reste un chiffrement respecté, encore pertinent pour l’enseignement et certaines applications pratiques.
+
+
+
+
+
+
+
+
+
+\section*{Annexes}
+\addcontentsline{toc}{section}{Annexes}
+
+\setcounter{subsection}{0}
+
+\subsection{Tables des S-Boxes du Serpent}
+
+Chaque S-Box mappe une entrée sur 4 bits (0 à 15) vers une sortie sur 4 bits (0 à 15).  
+Les valeurs sont données en hexadécimal.
+
+\subsection*{S-Box $S_0$}
+\begin{center}
+\begin{tabular}{|c|cccccccccccccccc|}
+\hline
+Entrée & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & A & B & C & D & E & F \\
+\hline
+Sortie & 3 & 8 & F & 1 & A & 6 & 5 & B & E & D & 4 & 2 & 7 & 0 & 9 & C \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{S-Box $S_1$}
+\begin{center}
+\begin{tabular}{|c|cccccccccccccccc|}
+\hline
+Entrée & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & A & B & C & D & E & F \\
+\hline
+Sortie & F & C & 2 & 7 & 9 & 0 & 5 & A & 1 & B & E & 8 & 6 & D & 3 & 4 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{S-Box $S_2$}
+\begin{center}
+\begin{tabular}{|c|cccccccccccccccc|}
+\hline
+Entrée & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & A & B & C & D & E & F \\
+\hline
+Sortie & 8 & 6 & 7 & 9 & 3 & C & A & F & D & 1 & E & 4 & 0 & B & 5 & 2 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{S-Box $S_3$}
+\begin{center}
+\begin{tabular}{|c|cccccccccccccccc|}
+\hline
+Entrée & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & A & B & C & D & E & F \\
+\hline
+Sortie & 0 & F & B & 8 & C & 9 & 6 & 3 & D & 1 & 2 & 4 & A & 7 & 5 & E \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{S-Box $S_4$}
+\begin{center}
+\begin{tabular}{|c|cccccccccccccccc|}
+\hline
+Entrée & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & A & B & C & D & E & F \\
+\hline
+Sortie & 1 & F & 8 & 3 & C & 0 & B & 6 & 2 & 5 & 4 & A & 9 & E & 7 & D \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{S-Box $S_5$}
+\begin{center}
+\begin{tabular}{|c|cccccccccccccccc|}
+\hline
+Entrée & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & A & B & C & D & E & F \\
+\hline
+Sortie & F & 5 & 2 & B & 4 & A & 9 & C & 0 & 3 & E & 8 & D & 6 & 7 & 1 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{S-Box $S_6$}
+\begin{center}
+\begin{tabular}{|c|cccccccccccccccc|}
+\hline
+Entrée & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & A & B & C & D & E & F \\
+\hline
+Sortie & 7 & 2 & C & 5 & 8 & 4 & 6 & B & E & 9 & 1 & F & D & 3 & A & 0 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{S-Box $S_7$}
+\begin{center}
+\begin{tabular}{|c|cccccccccccccccc|}
+\hline
+Entrée & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & A & B & C & D & E & F \\
+\hline
+Sortie & 1 & D & F & 0 & E & 8 & 2 & B & 7 & 4 & C & A & 9 & 3 & 5 & 6 \\
+\hline
+\end{tabular}
+\end{center}
+
 
 \end{document}
