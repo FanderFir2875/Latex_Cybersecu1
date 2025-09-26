@@ -4,5 +4,6 @@ rapport.fdb_latexmk
 rapport.fls
 rapport.log
 rapport.out
-rapport.syntex.gz
+rapport.synctex.gz
 rapport.toc
+rapport.pdf
