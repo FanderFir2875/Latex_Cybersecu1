@@ -144,14 +144,14 @@ Avec un changement sur le $32^{\text{ème}}$ tour qui remplace la \texttt{Transf
 \subsubsection{Génération des sous-clés}
 
 À partir de la clé principale, l’algorithme de Serpent génère 33 sous-clés de 128 bits chacune.  
-Le processus repose sur des rotations, des passages dans les boîtes de substitution (\textit{S-boxes}), ainsi que l’ajout d’une constante dérivée du nombre d’or \(\varphi\).  
+Le processus repose sur des rotations ainsi que l’ajout d’une constante dérivée du nombre d’or \(\varphi\).  
 Ce choix permet de briser les symétries et d’assurer une meilleure diffusion des bits de la clé.  
 
 Ainsi, chaque sous-clé obtenue est non linéairement reliée à la précédente et paraît indépendante, ce qui renforce la sécurité du chiffrement.  
 
 \subsubsection{Substitution (S-boxes)}
 Huit S-boxes différentes sont utilisées, notées $S_0, \dots, S_7$.  
-Elles transforment des blocs de 4 bits en 4 bits (au fur et à mesure)., et sont choisies de manière cyclique au fil des tours.
+Elles transforment des blocs de 4 bits en 4 bits (au fur et à mesure), et sont choisies de manière cyclique au fil des tours.
 
 \subsubsection{Transformation linéaire}
 Chaque tour applique une permutation fixe des bits pour assurer une bonne diffusion. On utilise de la rotations de bits par la gauche et des XOR entre les mots par exemple.
@@ -170,7 +170,7 @@ Chaque tour applique une permutation fixe des bits pour assurer une bonne diffus
 
 
 
-\section*{Exemple de chiffrement avec Serpent}
+\section*{Exemple de chiffrement}
 \addcontentsline{toc}{section}{Exemple de chiffrement avec Serpent}
 
 \setcounter{subsection}{0}
@@ -198,7 +198,7 @@ grâce à la fonction de génération de clés du Serpent.
 \subsection{Premier tour}
 
 \begin{enumerate}
-    \item \textbf{AddRoundKey} : 
+    \item \textbf{Ajout de clef de tour} : 
     \[
         X = P \oplus K_0
     \]
@@ -236,8 +236,7 @@ on obtient le texte chiffré suivant :
 \begin{tabular}{|c|c|}
 \hline
 \textbf{Étape} & \textbf{Opération} \\
-\hline
-Initialisation & $X_0 = P \oplus K_0$ \\
+
 \hline
 Tour $i \in [1,31]$ & $X_{i+1} = LT(S_{i \bmod 8}(X_i \oplus K_i))$ \\
 \hline
@@ -266,7 +265,7 @@ diffusion utilisent leurs versions inverses :
     par des \textbf{rotations circulaires à droite} (ROR) dans \(LT^{-1}\).
 \end{itemize}
 
-En résumé, le déchiffrement est symétrique du chiffrement : il reconstruit le texte clair en 
+En résumé, le déchiffrement est symétrique au chiffrement : il reconstruit le texte clair en 
 appliquant rigoureusement les mêmes opérations, mais dans l’ordre opposé et avec les versions inverses 
 des fonctions de substitution et de diffusion.
 
