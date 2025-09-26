@@ -141,8 +141,13 @@ Avec un changement sur le $32^{\text{ème}}$ tour qui remplace la \texttt{Transf
 
 \subsection{Sous-fonctions}
 
-\subsubsection{Génération de sous-clefs}
-À partir de la clef initiale, Serpent dérive 33 sous-clefs de 128 bits chacune, notées $K_0, K_1, \dots, K_{32}$.
+\subsubsection{Génération des sous-clés}
+
+À partir de la clé principale, l’algorithme de Serpent génère 33 sous-clés de 128 bits chacune.  
+Le processus repose sur des rotations, des passages dans les boîtes de substitution (\textit{S-boxes}), ainsi que l’ajout d’une constante dérivée du nombre d’or \(\varphi\).  
+Ce choix permet de briser les symétries et d’assurer une meilleure diffusion des bits de la clé.  
+
+Ainsi, chaque sous-clé obtenue est non linéairement reliée à la précédente et paraît indépendante, ce qui renforce la sécurité du chiffrement.  
 
 \subsubsection{Substitution (S-boxes)}
 Huit S-boxes différentes sont utilisées, notées $S_0, \dots, S_7$.  
