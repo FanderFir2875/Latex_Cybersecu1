@@ -106,7 +106,7 @@ L’algorithme Serpent est un chiffrement par bloc avec :
 \end{itemize}
 Chaque bloc est donc constitué de 128 bits.
 
-\subsection{clefs}
+\subsection{Clefs}
 L’espace des clefs dépend de la taille choisie :
 \begin{itemize}
     \item $K = \{0,1\}^{128}$ ;
@@ -244,6 +244,26 @@ Tour final & $C = S_{32 \bmod 8}(X_{31} \oplus K_{31}) \oplus K_{32}$ \\
 Ainsi, Serpent applique un total de 32 tours de transformations combinant 
 des opérations simples (\texttt{XOR}, substitutions, rotations) pour obtenir un chiffrement robuste.
 
+\subsection{Remarque sur le déchiffrement}
+
+Le processus de déchiffrement dans l’algorithme Serpent suit exactement la même structure 
+que le chiffrement, mais appliquée en sens inverse.  
+
+Ainsi, les étapes de chaque tour sont inversées et les opérations de substitution et de 
+diffusion utilisent leurs versions inverses :  
+
+\begin{itemize}
+    \item Les sous-clés sont appliquées dans l’ordre inverse, en commençant par la dernière 
+    utilisée lors du chiffrement.
+    \item Les \textbf{S-boxes} sont remplacées par leurs \textbf{S-boxes inverses}, afin de retrouver les valeurs originales.
+    \item La \textbf{transformation linéaire} (LT) est remplacée par sa version inverse (\(LT^{-1}\)).
+    \item Les \textbf{rotations circulaires à gauche} (ROL) utilisées dans \(LT\) sont remplacées 
+    par des \textbf{rotations circulaires à droite} (ROR) dans \(LT^{-1}\).
+\end{itemize}
+
+En résumé, le déchiffrement est symétrique du chiffrement : il reconstruit le texte clair en 
+appliquant rigoureusement les mêmes opérations, mais dans l’ordre opposé et avec les versions inverses 
+des fonctions de substitution et de diffusion.
 
 
 
