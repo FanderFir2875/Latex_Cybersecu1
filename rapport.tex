@@ -25,7 +25,7 @@
 % Maths et figures
 \usepackage{amsmath, amssymb}
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 
 
 % Pour la bibliographie simple
@@ -146,7 +146,7 @@ Avec un changement sur le $32^{\text{ème}}$ tour qui remplace la \texttt{Transf
 
 \subsubsection{Substitution (S-boxes)}
 Huit S-boxes différentes sont utilisées, notées $S_0, \dots, S_7$.  
-Elles transforment des blocs de 4 bits en 4 bits, et sont choisies de manière cyclique au fil des tours.
+Elles transforment des blocs de 4 bits en 4 bits (au fur et à mesure)., et sont choisies de manière cyclique au fil des tours.
 
 \subsubsection{Transformation linéaire}
 Chaque tour applique une permutation fixe des bits pour assurer une bonne diffusion. On utilise de la rotations de bits par la gauche et des XOR entre les mots par exemple.
