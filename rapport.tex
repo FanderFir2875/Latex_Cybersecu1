@@ -238,9 +238,9 @@ on obtient le texte chiffré suivant :
 \textbf{Étape} & \textbf{Opération} \\
 
 \hline
-Tour $i \in [1,31]$ & $X_{i+1} = LT(S_{i \bmod 8}(X_i \oplus K_i))$ \\
+Tour $i \in [0,30]$ & $X_{i+1} = LT(S_{i \bmod 8}(X_i \oplus K_i))$ \\
 \hline
-Tour final & $C = S_{32 \bmod 8}(X_{31} \oplus K_{31}) \oplus K_{32}$ \\
+Tour final & $C = S_{31 \bmod 8}(X_{31} \oplus K_{31}) \oplus K_{32}$ \\
 \hline
 \end{tabular}
 \end{center}
